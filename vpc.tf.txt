@@ -1,0 +1,21 @@
+module "vpc" {
+  source = "terraform-aws-modules/vpc/aws"
+  version = "~> v1.0"
+
+  name = "vpc-module-demo"
+  cidr = "10.30.0.0/16"
+
+  azs             = ["${slice(data.aws_availability_zones.available.names, 0, 3)}"]
+  private_subnets = ["10.30.1.0/24", "10.30.2.0/24", "10.30.3.0/24"]
+  public_subnets  = ["10.30.101.0/24", "10.30.102.0/24", "10.30.103.0/24"]
+
+  enable_nat_gateway = false
+  enable_vpn_gateway = false
+
+  tags = "${
+    map(
+     "Name", "terraform-eks-demo-node",
+     "kubernetes.io/cluster/${var.cluster-name}", "shared",
+    )
+  }"
+}
